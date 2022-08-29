@@ -20,7 +20,7 @@ def main(BASE_URL: str = BASE_URL, RESTAURANT_LIST_SUFFIX: str = RESTAURANT_LIST
     restaurant_list_count_history = []
 
     def _get_restaurants():
-        restaurant_list = WebDriverWait(driver, timeout=3).until(lambda x: x.find_elements(By.TAG_NAME, "li"))
+        restaurant_list = restaurant_list.append(WebDriverWait(driver, timeout=3).until(lambda x: x.find_elements(By.TAG_NAME, "li")))
         restaurant_list_count_history.append(len(restaurant_list))
 
         # check if the amount of restaurants loaded is less than top of the page says
