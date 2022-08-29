@@ -24,30 +24,31 @@ def set_chrome_options() -> None:
     chrome_prefs["profile.default_content_settings"] = {"images": 2}
     return chrome_options
 
+def get_page_height(driver: webdriver) -> int:
+    '''
+    Returns the page height if passed a webdriver.
+    '''
+    return driver.execute_script('return document.body.scrollHeight')
+
 def main(BASE_URL: str = BASE_URL, RESTAURANT_LIST_SUFFIX: str = RESTAURANT_LIST_SUFFIX, search_string: str = 'poznan-poznan-grunwald-61-801?sortBy=name'):
     service = Service(executable_path=ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=set_chrome_options())
     driver.get('https://www.pyszne.pl/na-dowoz/jedzenie/poznan-poznan-grunwald-61-801?sortBy=name')
-    restaurant_count = WebDriverWait(driver, timeout=3).until(EC.presence_of_element_located((By.XPATH, "//*[@id='page']/div[4]/section/div[1]/div/div[2]/div/h1")))
-    restaurant_count = int(re.findall('[0-9]+', restaurant_count.text)[0])
 
     restaurant_list = []
-    restaurant_list_count_history = []
+    reached_page_end = False
+    last_height = get_page_height(driver=driver)
 
-    def _get_restaurants():
-        restaurant_list = restaurant_list.append(WebDriverWait(driver, timeout=3).until(lambda x: x.find_elements(By.TAG_NAME, "li")))
-        restaurant_list_count_history.append(len(restaurant_list))
+    while not reached_page_end:
+        restaurant_list = WebDriverWait(driver, timeout=3).until(lambda x: x.find_elements(By.TAG_NAME, "li"))
+        ActionChains(driver).scroll_to_element(restaurant_list[-1]).perform()
+        current_height = get_page_height(driver=driver)
+        print(current_height)
 
-        # check if the amount of restaurants loaded is less than top of the page says
-        # if there aren't any more retaurants to be loaded, stop
-        if (len(restaurant_list) < restaurant_count) & (len(restaurant_list_count_history) == len(set(restaurant_list_count_history))):
-            ActionChains(driver).scroll_to_element(restaurant_list[-1]).perform()
-            _get_restaurants()
+        if last_height == current_height:
+            reached_page_end = True
         else:
-            pass
-        return None
-
-    _get_restaurants()
+            last_height = current_height
 
     return restaurant_list
 
