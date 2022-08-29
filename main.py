@@ -43,7 +43,6 @@ def main(BASE_URL: str = BASE_URL, RESTAURANT_LIST_SUFFIX: str = RESTAURANT_LIST
         restaurant_list = WebDriverWait(driver, timeout=3).until(lambda x: x.find_elements(By.TAG_NAME, "li"))
         ActionChains(driver).scroll_to_element(restaurant_list[-1]).perform()
         current_height = get_page_height(driver=driver)
-        print(current_height)
 
         if last_height == current_height:
             reached_page_end = True
