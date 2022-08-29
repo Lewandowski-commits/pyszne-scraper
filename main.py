@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -27,7 +28,7 @@ def main(BASE_URL: str = BASE_URL, RESTAURANT_LIST_SUFFIX: str = RESTAURANT_LIST
     service = Service(executable_path=ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=set_chrome_options())
     driver.get('https://www.pyszne.pl/na-dowoz/jedzenie/poznan-poznan-grunwald-61-801?sortBy=name')
-    restaurant_count = WebDriverWait(driver, timeout=3).until(lambda x: x.find_element(By.XPATH, "//*[@id='page']/div[4]/section/div[1]/div/div[2]/div/h1"))
+    restaurant_count = WebDriverWait(driver, timeout=3).until(EC.presence_of_element_located((By.XPATH, "//*[@id='page']/div[4]/section/div[1]/div/div[2]/div/h1")))
     restaurant_count = int(re.findall('[0-9]+', restaurant_count.text)[0])
 
     restaurant_list = []
