@@ -34,13 +34,14 @@ def main(BASE_URL: str = BASE_URL, RESTAURANT_LIST_SUFFIX: str = RESTAURANT_LIST
     service = Service(executable_path=ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=set_chrome_options())
     driver.get('https://www.pyszne.pl/na-dowoz/jedzenie/poznan-poznan-grunwald-61-801?sortBy=name')
+    driver.implicitly_wait(15)
 
     restaurant_list = []
     reached_page_end = False
     last_height = get_page_height(driver=driver)
 
     while not reached_page_end:
-        restaurant_list = WebDriverWait(driver, timeout=3).until(lambda x: x.find_elements(By.TAG_NAME, "li"))
+        restaurant_list = WebDriverWait(driver, timeout=10).until(lambda x: x.find_elements(By.TAG_NAME, "li"))
         ActionChains(driver).scroll_to_element(restaurant_list[-1]).perform()
         current_height = get_page_height(driver=driver)
 
